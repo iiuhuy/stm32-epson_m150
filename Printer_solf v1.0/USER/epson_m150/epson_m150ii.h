@@ -2,19 +2,13 @@
 #define __EPSON_M150II_H
 #include "sys.h"
 
-#define MAX_LINE_CHAR 	16
-#define HEAD            4    //四个打印头
-#define LET_PER_HEAD    4    //一个打印头4个字符
-#define VOL_PER_LET     6    //每个字符6列
-#define LINE            10    //每个字符10行，两空行
-#define LINEPERLIST				8
 void Printer_IO_Config(void);
-void printer_line(void);
+void Printer_line(void);
 void GPIO_ToggleBit(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin);
-void printer_timer_init(void);		// printer parameter init
+void Printer_Timer_Init(void);		// printer parameter init
 void print_matrix_invert(void);		// matrix invert function
-
-
+void Printer_Stop(void);	// 停止打印机
+void Printer_Font_Extract(char *String);
 
 typedef struct
 {

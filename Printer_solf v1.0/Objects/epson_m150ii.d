@@ -30,3 +30,4 @@
 .\objects\epson_m150ii.o: .\STM32F10x_FWLib\inc\stm32f10x_usart.h
 .\objects\epson_m150ii.o: .\STM32F10x_FWLib\inc\stm32f10x_wwdg.h
 .\objects\epson_m150ii.o: .\STM32F10x_FWLib\inc\misc.h
+.\objects\epson_m150ii.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h

@@ -1,106 +1,26 @@
 #include "epson_m150ii.h"
 #include "sys.h"
+#include "string.h"
 
 PRINTER_CTR_TYPE p_ctr;
 
-//----- 信号之间互相屏蔽变量(互斥) ----- //
+// ----------------- 变量 ------------------- //
 uint8_t g_bTimingIntr;	
 uint8_t g_bResetIntr;		
 
-void GPIO_ToggleBit(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin)
-{
-	if(GPIO_ReadOutputDataBit(GPIOx, GPIO_Pin) == Bit_SET)
-	{
-		GPIO_ResetBits(GPIOx, GPIO_Pin);
-	}
-	else
-	{
-		GPIO_SetBits(GPIOx, GPIO_Pin);
-	}
-}
+const u8 dot_a[] = {1,5, 9,13,17,21,25,29,33,37,41,45,49,53,57,61,65,69,73,77,81,85,89,93,97};
+const u8 dot_b[] = {2,6,10,14,18,22,26,30,34,38,42,46,50,54,58,62,66,70,74,78,82,86,90,94,98};
+const u8 dot_c[] = {3,7,11,15,19,23,27,31,35,39,43,47,51,55,59,63,67,71,75,79,83,87,91,95,99};
+const u8 dot_d[] = {4,8,12,16,20,24,28,32,36,40,44,48,52,56,60,64,68,72,76,80,84,88,92,96,100};
 
-// Printer IO Init
-void Printer_IO_Config(void)
-{
-	GPIO_InitTypeDef    GPIO_InitStructure;
-	EXTI_InitTypeDef 	EXTI_InitStructure;	
+u8 a_i = 0;		// 记录 Head_a 所在位置的变量 
+u8 b_i = 0;		// 记录 Head_b 所在位置的变量 
+u8 c_i = 0;		// 记录 Head_c 所在位置的变量 
+u8 d_i = 0;		// 记录 Head_d 所在位置的变量 
 
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO | RCC_APB2Periph_GPIOB , ENABLE);		//  open clock GPIOB, AFIO clock
-//	GPIO_PinRemapConfig(GPIO_Remap_SWJ_JTAGDisable,ENABLE);
-	
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;	// A
-	GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_Out_PP;
-	GPIO_InitStructure.GPIO_Pin =  PTA_PIN;
-	GPIO_Init(PTA_PORT, &GPIO_InitStructure);	
-
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;	// B
-	GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_Out_PP;
-	GPIO_InitStructure.GPIO_Pin =  PTB_PIN;
-	GPIO_Init(PTB_PORT, &GPIO_InitStructure);	
-
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;	// C
-	GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_Out_PP;
-	GPIO_InitStructure.GPIO_Pin =  PTC_PIN;
-	GPIO_Init(PTC_PORT, &GPIO_InitStructure);	
-
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;	// D
-	GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_Out_PP;
-	GPIO_InitStructure.GPIO_Pin =  PTD_PIN;
-	GPIO_Init(PTD_PORT, &GPIO_InitStructure);	
-	
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;	// 配置 LED1(PB14) 引脚 (不是必须)
-	GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_Out_PP;
-	GPIO_InitStructure.GPIO_Pin =  GPIO_Pin_14;
-	GPIO_Init(GPIOB, &GPIO_InitStructure);
-	GPIO_SetBits(GPIOB, GPIO_Pin_14);	// 关闭
-
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;	// 配置 LED2(PB15) 引脚 (不是必须)
-	GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_Out_PP;
-	GPIO_InitStructure.GPIO_Pin =  GPIO_Pin_15;
-	GPIO_Init(GPIOB, &GPIO_InitStructure);
-	GPIO_SetBits(GPIOB, GPIO_Pin_15);	// 关闭
-
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;			// Motor
-	GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_Out_PP;
-	GPIO_InitStructure.GPIO_Pin =  MOTER_PIN;
-	GPIO_Init(MOTER_PORT, &GPIO_InitStructure);	
-	
-	/******************  TIMGIMG 外部中断 ******************/
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;			// Timing 
-	GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_IN_FLOATING;
-	GPIO_InitStructure.GPIO_Pin =  PT_TIMER_PIN;
-	GPIO_Init(PT_TIMER_PORT, &GPIO_InitStructure);	
-
-	EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
-	EXTI_InitStructure.EXTI_Line = EXTI_Line6;
-	EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising_Falling;		// EXTI_Trigger_Rising_Falling
-	EXTI_InitStructure.EXTI_LineCmd = ENABLE;
-	EXTI_Init(&EXTI_InitStructure);		
-	GPIO_EXTILineConfig(GPIO_PortSourceGPIOB, GPIO_PinSource6);
-	EXTI_ClearITPendingBit(EXTI_Line6);		// Clean Timing IT Flag
-
-	/******************  Reset Signal 外部中断 ******************/
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_IPU;
-	GPIO_InitStructure.GPIO_Pin =  PT_RESET_DETCT_PIN;
-	GPIO_Init(PT_RESET_DETCT_PORT, &GPIO_InitStructure);	
-	
-	EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
-	EXTI_InitStructure.EXTI_Line = EXTI_Line12;
- 	EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Falling;		// 下降沿触发	
- 	EXTI_InitStructure.EXTI_LineCmd = ENABLE;
-	EXTI_Init(&EXTI_InitStructure);
-	GPIO_EXTILineConfig(GPIO_PortSourceGPIOB, GPIO_PinSource12);
-	EXTI_ClearITPendingBit(EXTI_Line12);		// Clean Timing IT Flag
-}
-
-// 打印前初始化
-void printer_timer_init(void)
-{
-	p_ctr.r_h = 0;
-	p_ctr.t_h = 0;
-	p_ctr.t_num = 0;
-}
+u8 print_real[7][12];		// 最终需要打印缓存的 buffer.
+u8 ascii_printer[12][7];	// 需要打印矩阵倒置前的 buffer.
+u8 finishi_flag = 0;	// 打印完12 行停电机
 
 // 横向取模
 // 这是一个 5x7 的 ASCII 码字库的数组。一共有 96 个可打印的 ASCII码。
@@ -203,7 +123,7 @@ unsigned char const ascii_5x7[96][7]={
 	0x00,0x00,0x00,0x00,0x00,0x00,0x00,//'?' 	96
 };
 
-unsigned char const ascii_test[12][7]={
+u8 ascii_test[12][7]={
 	0x0E,0x11,0x11,0x1F,0x11,0x11,0x11,//'A' 	34
 	0x0F,0x11,0x11,0x0F,0x11,0x11,0x0F,//'B' 	35
 	0x0E,0x11,0x01,0x01,0x01,0x11,0x0E,//'C' 	36
@@ -213,54 +133,131 @@ unsigned char const ascii_test[12][7]={
 	0x0E,0x11,0x01,0x01,0x19,0x11,0x1E,//'G' 	40
 	0x11,0x11,0x11,0x1F,0x11,0x11,0x11,//'H' 	41
 	0x07,0x02,0x02,0x02,0x02,0x02,0x07,//'I' 	42
-//	0x1C,0x08,0x08,0x08,0x08,0x09,0x06,//'J' 	43
-//	0x11,0x09,0x05,0x03,0x05,0x09,0x11,//'K' 	44
-//	0x01,0x01,0x01,0x01,0x01,0x01,0x1F,//'L' 	45
+	0x1C,0x08,0x08,0x08,0x08,0x09,0x06,//'J' 	43
+	0x11,0x09,0x05,0x03,0x05,0x09,0x11,//'K' 	44
+	0x01,0x01,0x01,0x01,0x01,0x01,0x1F,//'L' 	45
 };	
 
-u8 print_real[7][12];		// 需要打印缓存的 buffer 
 
 
-//u8 print_real[7][12]=
-//{
-   //{`0`   `1`  `2`   `3`   `4`   `5`  `6`  `7`   `8`   `9`	 '(' ')'} ----- //
-/*
-	{0x0E,0x04,0x0E,0x0E,0x08,0x1F,0x0C,0x1F,0x0E,0x0E,0x04,0x01}, 
-	{0x11,0x06,0x11,0x11,0x0C,0x01,0x02,0x10,0x11,0x11,0x02,0x02}, 
-	{0x09,0x04,0x10,0x10,0x0A,0x0F,0x01,0x08,0x11,0x11,0x01,0x04},
-	{0x15,0x04,0x0C,0x0C,0x09,0x10,0x0F,0x04,0x0E,0x1E,0x01,0x04},
-	{0x13,0x04,0x02,0x10,0x1F,0x10,0x11,0x02,0x11,0x10,0x01,0x04},
-	{0x11,0x04,0x01,0x11,0x08,0x11,0x11,0x02,0x11,0x08,0x02,0x02},
-	{0x0E,0x0E,0x1F,0x0E,0x08,0x0E,0x0E,0x02,0x0E,0x06,0x04,0x01},
-*/
-/*
-	0x0E,0x04,0x0E,0x0E,0x08,0x1F,0x0C,0x1F,0x0E,0x0E,0x00,0x00, 
-	0x11,0x06,0x11,0x11,0x0C,0x01,0x02,0x10,0x11,0x11,0x00,0x00,
-	0x09,0x04,0x10,0x10,0x0A,0x0F,0x01,0x08,0x11,0x11,0x00,0x00,
-	0x15,0x04,0x0C,0x0C,0x09,0x10,0x0F,0x04,0x0E,0x1E,0x00,0x00,
-	0x13,0x04,0x02,0x10,0x1F,0x10,0x11,0x02,0x11,0x10,0x00,0x00,
-	0x11,0x04,0x01,0x11,0x08,0x11,0x11,0x02,0x11,0x08,0x00,0x00,
-	0x0E,0x0E,0x1F,0x0E,0x08,0x0E,0x0E,0x02,0x0E,0x06,0x00,0x00,
-*/
-//};		
+// ----------------------- 函数 -------------------------- //
+void GPIO_ToggleBit(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin)
+{
+	if(GPIO_ReadOutputDataBit(GPIOx, GPIO_Pin) == Bit_SET)
+	{
+		GPIO_ResetBits(GPIOx, GPIO_Pin);
+	}
+	else
+	{
+		GPIO_SetBits(GPIOx, GPIO_Pin);
+	}
+}
 
-const u8 dot_a[] = {1,5, 9,13,17,21,25,29,33,37,41,45,49,53,57,61,65,69,73,77,81,85,89,93,97};
-const u8 dot_b[] = {2,6,10,14,18,22,26,30,34,38,42,46,50,54,58,62,66,70,74,78,82,86,90,94,98};
-const u8 dot_c[] = {3,7,11,15,19,23,27,31,35,39,43,47,51,55,59,63,67,71,75,79,83,87,91,95,99};
-const u8 dot_d[] = {4,8,12,16,20,24,28,32,36,40,44,48,52,56,60,64,68,72,76,80,84,88,92,96,100};
-u8 a_i = 0;		// 记录 Head_a 所在位置的变量
-u8 b_i = 0;		// 记录 Head_b 所在位置的变量
-u8 c_i = 0;		// 记录 Head_c 所在位置的变量
-u8 d_i = 0;		// 记录 Head_d 所在位置的变量
+// Printer IO Init
+void Printer_IO_Config(void)
+{
+	GPIO_InitTypeDef    GPIO_InitStructure;
+	EXTI_InitTypeDef 	EXTI_InitStructure;	
+
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO | RCC_APB2Periph_GPIOB , ENABLE);		//  open clock GPIOB, AFIO clock
+	
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;	// A 
+	GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_Out_PP;
+	GPIO_InitStructure.GPIO_Pin =  PTA_PIN;
+	GPIO_Init(PTA_PORT, &GPIO_InitStructure);	
+
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;	// B 
+	GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_Out_PP;
+	GPIO_InitStructure.GPIO_Pin =  PTB_PIN;
+	GPIO_Init(PTB_PORT, &GPIO_InitStructure);	
+
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;	// C 
+	GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_Out_PP;
+	GPIO_InitStructure.GPIO_Pin =  PTC_PIN;
+	GPIO_Init(PTC_PORT, &GPIO_InitStructure);	
+
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;	// D 
+	GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_Out_PP;
+	GPIO_InitStructure.GPIO_Pin =  PTD_PIN;
+	GPIO_Init(PTD_PORT, &GPIO_InitStructure);	
+	
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;	// 配置 LED1(PB14) 引脚 (不是必须)
+	GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_Out_PP;
+	GPIO_InitStructure.GPIO_Pin =  GPIO_Pin_14;
+	GPIO_Init(GPIOB, &GPIO_InitStructure);
+	GPIO_SetBits(GPIOB, GPIO_Pin_14);	// 关闭
+
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;	// 配置 LED2(PB15) 引脚 (不是必须)
+	GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_Out_PP;
+	GPIO_InitStructure.GPIO_Pin =  GPIO_Pin_15;
+	GPIO_Init(GPIOB, &GPIO_InitStructure);
+	GPIO_SetBits(GPIOB, GPIO_Pin_15);	// 关闭
+
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;			// Motor
+	GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_Out_PP;
+	GPIO_InitStructure.GPIO_Pin =  MOTER_PIN;
+	GPIO_Init(MOTER_PORT, &GPIO_InitStructure);	
+	
+	/******************  TIMGIMG 外部中断 ******************/
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;			// Timing 
+	GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_IN_FLOATING;
+	GPIO_InitStructure.GPIO_Pin =  PT_TIMER_PIN;
+	GPIO_Init(PT_TIMER_PORT, &GPIO_InitStructure);	
+
+	EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
+	EXTI_InitStructure.EXTI_Line = EXTI_Line6;
+	EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising_Falling;		// EXTI_Trigger_Rising_Falling
+	EXTI_InitStructure.EXTI_LineCmd = ENABLE;
+	EXTI_Init(&EXTI_InitStructure);		
+	GPIO_EXTILineConfig(GPIO_PortSourceGPIOB, GPIO_PinSource6);
+	EXTI_ClearITPendingBit(EXTI_Line6);		// Clean Timing IT Flag
+
+	/******************  Reset Signal 外部中断 ******************/
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_IPU;
+	GPIO_InitStructure.GPIO_Pin =  PT_RESET_DETCT_PIN;
+	GPIO_Init(PT_RESET_DETCT_PORT, &GPIO_InitStructure);	
+	
+	EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
+	EXTI_InitStructure.EXTI_Line = EXTI_Line12;
+ 	EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Falling;		// 下降沿触发	
+ 	EXTI_InitStructure.EXTI_LineCmd = ENABLE;
+	EXTI_Init(&EXTI_InitStructure);
+	GPIO_EXTILineConfig(GPIO_PortSourceGPIOB, GPIO_PinSource12);
+	EXTI_ClearITPendingBit(EXTI_Line12);		// Clean Timing IT Flag
+}
+
+// 打印前初始化
+void Printer_Timer_Init(void)
+{
+	p_ctr.r_h = 0;
+	p_ctr.t_h = 0;
+	p_ctr.t_num = 0;
+}
+
+// 打印完成一行恢复标志位和打印头
+void Printer_Headdot_Reset(void)
+{
+	p_ctr.line_num = 0;
+	p_ctr.t_num = 0;
+	p_ctr.t_num_back = 0;
+	p_ctr.p_on = 0;
+	PTA_OFF();
+	PTB_OFF();
+	PTC_OFF();
+	PTD_OFF();
+}
 
 // a 是取到当前打印行所需要打印的长度, b 代表一行固定的总长度( 当前固定的总长度12 )
 #define Max(a,b)	((a) < (b)?(b):(a))
 
 // 矩阵倒置函数
 void print_matrix_invert(void)
-{
-	int x, y, i = 0, maxlen;
-	int len_obtain = 9; int len_line = 12;	// len_obtain 获取的数据长度(根据)
+{	
+	int x, y;
+//	int len_obtain = 9; int len_line = 12;	// len_obtain 获取的数据长度(根据)
+//	ascii_printer[12][7] = ascii_test[12][7];
+//	memset(ascii_printer,0x04,12*7);
 
 /*
 	// 先进行右对齐处理, 再倒置
@@ -273,73 +270,112 @@ void print_matrix_invert(void)
 			for(y = 0;y < 7; y++)
 			{
 				print_real[x][y] = 0x00;
-				//print_real[x][y] = ascii_test[y][x];   // 将字库补齐
+				//print_real[x][y] = ascii_printer[y][x];   // 将字库补齐
 			}
 		}
 	
-		memcpy(print_real[x+1][y], ascii_test, sizeof(ascii_test));		// 补齐后将打印的信息拷贝到后面
+		memcpy(print_real[x+1][y], ascii_test, sizeof(ascii_printer));		// 补齐后将打印的信息拷贝到后面
 	}
 */
 	
 	// 将打印的一行倒置, 即点阵进行翻转
-	for(x = 0;x < 7; x++)
-	{
-		for(y = 0;y < 12; y++)
+//	if(finishi_flag == 0)
+//	{
+		for(x = 0;x < 7; x++)
 		{
-			print_real[x][y] = ascii_test[y][x];  
+			for(y = 0;y < 12; y++)
+			{
+				print_real[x][y] = ascii_printer[y][x];  
+			}
 		}
-	}
-
-
-	
+//	}
 }
+
+//#define	LINE_FONT_MAX	12
+// 提取相关的数据
+void Printer_Font_Extract(char *String)
+{
+	u8 null;
+	u8 i,j;
+	u8 StringLen = 0x00;
+	StringLen = strlen(String);
 	
-// Print line 
-void printer_line(void)
+	while(*String != '\0')
+	{
+//		if((*String >= 0x20) && (*String < 0x7F ))
+//		{
+//			//for(y=0;y<12;y++)
+//			//{
+//				for(x = 0; x < 7; x++)
+//				{
+//					ascii_printer[0][x] = ascii_5x7[(*String + 0) - 0x20][x];
+//					ascii_printer[1][x] = ascii_5x7[(*String + 1) - 0x20][x];
+//					ascii_printer[2][x] = ascii_5x7[(*String + 2) - 0x20][x];
+//					ascii_printer[3][x] = ascii_5x7[(*String + 3) - 0x20][x];
+//					ascii_printer[4][x] = ascii_5x7[(*String + 4) - 0x20][x];
+//					ascii_printer[5][x] = ascii_5x7[(*String + 5) - 0x20][x];
+//					ascii_printer[6][x] = ascii_5x7[(*String + 6) - 0x20][x];
+//					ascii_printer[7][x] = ascii_5x7[(*String + 7) - 0x20][x];
+//					ascii_printer[8][x] = ascii_5x7[(*String + 8) - 0x20][x];
+//					ascii_printer[9][x] = ascii_5x7[(*String + 9) - 0x20][x];
+//					ascii_printer[10][x] = ascii_5x7[(*String + 10) - 0x20][x];
+//					ascii_printer[11][x] = ascii_5x7[(*String + 11) - 0x20][x];
+//				}
+			//}
+		null = 12 - StringLen;
+		
+		for(j = 0; j < StringLen; j++)
+		{
+			for(i = 0; i < 7; i++)
+			{
+				ascii_printer[j + null][i] = ascii_5x7[*String - 0x20][i];
+			}
+			String++;
+		}	
+	}
+}
+
+// Print line dot. 
+void Printer_line(void)
 {
 	u8 space_line = 5;
-
 	if(g_bTimingIntr)	 // if receive Timing signal, close A\B\C\D, t_num ++ util > 97!
 	{
-		PTA_OFF();PTB_OFF();PTC_OFF();PTD_OFF();
-	
-		g_bTimingIntr = 0;
-		p_ctr.t_num ++;
-	}
-	
-	if(g_bResetIntr)	// if receive Reset signal, print line finish, line_num++ 
-	{
-		g_bResetIntr = 0;
-		p_ctr.line_num ++;
-
-		p_ctr.t_num = 0;
-		p_ctr.t_num_back = 0;
-
-		a_i = 0;
-		b_i = 0;
-		c_i = 0;
-		d_i = 0;
-	}
-
-	if(p_ctr.line_num > 7 + space_line)	// p_ctr.line_num  每个点阵的行数(The number of rows in each dot matrix.)
-	{																		// do space_line print
-		MOTER_OFF();
 		PTA_OFF();
 		PTB_OFF();
 		PTC_OFF();
 		PTD_OFF();
-		p_ctr.line_num = 0;
-		p_ctr.t_num = 0;
-		p_ctr.t_num_back = 0;
-		p_ctr.p_on = 0;
+	
+		g_bTimingIntr = 0;	// Timing clean.
+		p_ctr.t_num ++;
 	}
 	
-	if(d_i > 23)
+	if(g_bResetIntr)	// if receive Reset signal, print line finish, line_number++ 
+	{
+		g_bResetIntr = 0;	// Reset clean.
+		p_ctr.line_num ++;	// printer line finish.
+
+		p_ctr.t_num = 0;		// 记录打印的点清零
+		p_ctr.t_num_back = 0; 
+
+		a_i = 0;
+		b_i = 0;
+		c_i = 0;
+		d_i = 0;
+	}
+	
+	if(d_i > 23)	// 打印到最后一个点的时候, 清除针头点的记录
 	{
 		a_i = 0;
 		b_i = 0;
 		c_i = 0;
 		d_i = 0;
+	}
+	
+	if(p_ctr.line_num > 7 + space_line)	// 打印完成一个点行.	
+	{
+		finishi_flag ++;
+		Printer_Headdot_Reset();		
 	}
 	
 	// Judge printer head work logic
@@ -398,6 +434,11 @@ void printer_line(void)
 			}
 			d_i++;
 		}
+	}
+
+	if(finishi_flag > 2)	// printer 12 line date, stop motor
+	{
+		MOTER_OFF();
 	}
 }
 

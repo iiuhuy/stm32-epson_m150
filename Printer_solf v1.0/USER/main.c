@@ -133,30 +133,36 @@ void Nvic_Init(void)
 	NVIC_Init(&NVIC_InitStructure);
 }
 
+void Printer_work(void)
+{
+	if(byPrinter_head_ITFlag == 0x01)
+	{
+		//Printer_Font_Extract("A1B2C3");	// 提取先关的数据
+//		Printer_Font_Extract("A1B2C3D4");
+		print_matrix_invert();		// 打印点阵的置换
+		Printer_line();	// 打印一行
+	}
+}
 
 int main(void)
 {
 	RCC_Configuration();	
 	Uart1_Init(115200);	// 串口初始化： 波特率 115200, 8 数据位, 1 位停止位, 禁用奇偶校验
-  	delay_init();		// 延时初始化
+	delay_init();		// 延时初始化
 	
 	Printer_IO_Config();	// 打印机 IO 初始化
 	Nvic_Init();			// 中断优先级初始化
-	printer_timer_init();  // 打印前初始化变量
+	Printer_Timer_Init();  // 打印前初始化变量
 	
 	MOTER_ON();
 	delay_ms(200);
+	Printer_Font_Extract("A1B2C3D4");
 
 //	memset(print_real, 0xFF, sizeof(print_real));
 
-  while (1)
-  {
-		if(byPrinter_head_ITFlag == 0x01)
-		{
-			print_matrix_invert();	// 打印点阵的置换
-			printer_line();	// 打印一行
-			//GPIO_ToggleBit(GPIOB, GPIO_Pin_14);	
-		}
-  }
+  	while (1)
+  	{
+  		Printer_work();
+  	}
 }
 

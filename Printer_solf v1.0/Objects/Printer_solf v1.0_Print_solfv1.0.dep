@@ -1,5 +1,5 @@
 Dependencies for Project 'Printer_solf v1.0', Target 'Print_solfv1.0': (DO NOT MODIFY !)
-F (.\USER\main.c)(0x59E03108)(-c --cpu Cortex-M3 -g -O0 --apcs=interwork --split_sections -I .\CORE -I .\USER -I .\STM32F10x_FWLib\inc -I .\USER\epson_m150 -I .\USER\sys -I .\USER\delay -I .\USER\usart-IE:\2_Store\Printer\Printer_Debug\STM32F103C8_debug\Proj_one\Print_solf\RTE-IC:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.2.0\Device\Include-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="521" -DSTM32F10X_MD -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER-o .\objects\main.o --omf_browse .\objects\main.crf --depend .\objects\main.d)
+F (.\USER\main.c)(0x59E4B096)(-c --cpu Cortex-M3 -g -O0 --apcs=interwork --split_sections -I .\CORE -I .\USER -I .\STM32F10x_FWLib\inc -I .\USER\epson_m150 -I .\USER\sys -I .\USER\delay -I .\USER\usart-IE:\2_Store\Printer\Printer_Debug\STM32F103C8_debug\Proj_one\Print_solf\RTE-IC:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.2.0\Device\Include-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="521" -DSTM32F10X_MD -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER-o .\objects\main.o --omf_browse .\objects\main.crf --depend .\objects\main.d)
 I (USER\stm32f10x.h)(0x4D783CB4)
 I (.\CORE\core_cm3.h)(0x4D523B58)
 I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x574E3E26)
@@ -33,7 +33,7 @@ I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x574E3E26)
 I (.\USER\delay\delay.h)(0x50513B7A)
 I (.\USER\sys\sys.h)(0x59CF4AA2)
 I (.\USER\usart\Uart.h)(0x54C1B16D)
-I (.\USER\epson_m150\epson_m150ii.h)(0x59DEDCBA)
+I (.\USER\epson_m150\epson_m150ii.h)(0x59E479D3)
 F (.\USER\stm32f10x_it.c)(0x59DDC1B9)(-c --cpu Cortex-M3 -g -O0 --apcs=interwork --split_sections -I .\CORE -I .\USER -I .\STM32F10x_FWLib\inc -I .\USER\epson_m150 -I .\USER\sys -I .\USER\delay -I .\USER\usart-IE:\2_Store\Printer\Printer_Debug\STM32F103C8_debug\Proj_one\Print_solf\RTE-IC:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.2.0\Device\Include-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="521" -DSTM32F10X_MD -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER-o .\objects\stm32f10x_it.o --omf_browse .\objects\stm32f10x_it.crf --depend .\objects\stm32f10x_it.d)
 I (USER\stm32f10x_it.h)(0x4D99A59E)
 I (USER\stm32f10x.h)(0x4D783CB4)
@@ -65,7 +65,7 @@ I (.\STM32F10x_FWLib\inc\stm32f10x_tim.h)(0x4D783BB4)
 I (.\STM32F10x_FWLib\inc\stm32f10x_usart.h)(0x4D783BB4)
 I (.\STM32F10x_FWLib\inc\stm32f10x_wwdg.h)(0x4D783BB4)
 I (.\STM32F10x_FWLib\inc\misc.h)(0x4D783BB4)
-I (.\USER\epson_m150\epson_m150ii.h)(0x59DEDCBA)
+I (.\USER\epson_m150\epson_m150ii.h)(0x59E479D3)
 I (.\USER\sys\sys.h)(0x59CF4AA2)
 F (.\USER\system_stm32f10x.c)(0x4D783CB0)(-c --cpu Cortex-M3 -g -O0 --apcs=interwork --split_sections -I .\CORE -I .\USER -I .\STM32F10x_FWLib\inc -I .\USER\epson_m150 -I .\USER\sys -I .\USER\delay -I .\USER\usart-IE:\2_Store\Printer\Printer_Debug\STM32F103C8_debug\Proj_one\Print_solf\RTE-IC:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.2.0\Device\Include-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="521" -DSTM32F10X_MD -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER-o .\objects\system_stm32f10x.o --omf_browse .\objects\system_stm32f10x.crf --depend .\objects\system_stm32f10x.d)
 I (USER\stm32f10x.h)(0x4D783CB4)
@@ -97,8 +97,8 @@ I (.\STM32F10x_FWLib\inc\stm32f10x_tim.h)(0x4D783BB4)
 I (.\STM32F10x_FWLib\inc\stm32f10x_usart.h)(0x4D783BB4)
 I (.\STM32F10x_FWLib\inc\stm32f10x_wwdg.h)(0x4D783BB4)
 I (.\STM32F10x_FWLib\inc\misc.h)(0x4D783BB4)
-F (.\USER\epson_m150\epson_m150ii.c)(0x59E18A5D)(-c --cpu Cortex-M3 -g -O0 --apcs=interwork --split_sections -I .\CORE -I .\USER -I .\STM32F10x_FWLib\inc -I .\USER\epson_m150 -I .\USER\sys -I .\USER\delay -I .\USER\usart-IE:\2_Store\Printer\Printer_Debug\STM32F103C8_debug\Proj_one\Print_solf\RTE-IC:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.2.0\Device\Include-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="521" -DSTM32F10X_MD -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER-o .\objects\epson_m150ii.o --omf_browse .\objects\epson_m150ii.crf --depend .\objects\epson_m150ii.d)
-I (USER\epson_m150\epson_m150ii.h)(0x59DEDCBA)
+F (.\USER\epson_m150\epson_m150ii.c)(0x59E4B04D)(-c --cpu Cortex-M3 -g -O0 --apcs=interwork --split_sections -I .\CORE -I .\USER -I .\STM32F10x_FWLib\inc -I .\USER\epson_m150 -I .\USER\sys -I .\USER\delay -I .\USER\usart-IE:\2_Store\Printer\Printer_Debug\STM32F103C8_debug\Proj_one\Print_solf\RTE-IC:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.2.0\Device\Include-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="521" -DSTM32F10X_MD -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER-o .\objects\epson_m150ii.o --omf_browse .\objects\epson_m150ii.crf --depend .\objects\epson_m150ii.d)
+I (USER\epson_m150\epson_m150ii.h)(0x59E479D3)
 I (.\USER\sys\sys.h)(0x59CF4AA2)
 I (.\USER\stm32f10x.h)(0x4D783CB4)
 I (.\CORE\core_cm3.h)(0x4D523B58)
@@ -128,6 +128,7 @@ I (.\STM32F10x_FWLib\inc\stm32f10x_tim.h)(0x4D783BB4)
 I (.\STM32F10x_FWLib\inc\stm32f10x_usart.h)(0x4D783BB4)
 I (.\STM32F10x_FWLib\inc\stm32f10x_wwdg.h)(0x4D783BB4)
 I (.\STM32F10x_FWLib\inc\misc.h)(0x4D783BB4)
+I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x574E3E26)
 F (.\USER\sys\sys.c)(0x590EDC8F)(-c --cpu Cortex-M3 -g -O0 --apcs=interwork --split_sections -I .\CORE -I .\USER -I .\STM32F10x_FWLib\inc -I .\USER\epson_m150 -I .\USER\sys -I .\USER\delay -I .\USER\usart-IE:\2_Store\Printer\Printer_Debug\STM32F103C8_debug\Proj_one\Print_solf\RTE-IC:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.2.0\Device\Include-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="521" -DSTM32F10X_MD -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER-o .\objects\sys.o --omf_browse .\objects\sys.crf --depend .\objects\sys.d)
 I (USER\sys\sys.h)(0x59CF4AA2)
 I (.\USER\stm32f10x.h)(0x4D783CB4)
