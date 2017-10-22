@@ -24,6 +24,8 @@
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f10x_it.h"
 #include "epson_m150ii.h"
+#include "stm32f10x_gpio.h"
+#include "string.h"
 
 /** @addtogroup STM32F10x_StdPeriph_Template
   * @{
@@ -153,7 +155,7 @@ void SysTick_Handler(void)
 {
 }*/
 
- // -------- falg variable --------- //
+// -------- flag variable --------- //
 extern uint8_t byPrinter_head_ITFlag ;
 extern uint8_t g_bTimingIntr;
 extern uint8_t g_bResetIntr;
@@ -161,38 +163,47 @@ extern uint8_t g_bResetIntr;
 /**
   * @} EXTI9_5_IRQHandler()
   */
-void EXTI9_5_IRQHandler(void)		// Timing Signal
-{
-	if(EXTI_GetITStatus(EXTI_Line6) != RESET)	// 判断在 Line_6 上是否发生中断 
+void EXTI9_5_IRQHandler(void)		
+{	
+	/******  PB8 -->>  Reset    ||    PB9 -->> Timing **********/ 
+
+	if(EXTI_GetITStatus(EXTI_Line9) != RESET)	// PB8 -->> Timing
 	{
 		// 中断逻辑 --->>> 进行打印机的处理
-//		GPIO_ToggleBit(GPIOB, GPIO_Pin_14);		
 		byPrinter_head_ITFlag = 0x01; 	// 打印机针头处理标志位
-		g_bTimingIntr = 0x01 ; 
-		EXTI_ClearITPendingBit(EXTI_Line6);		// Clean IT Flag
-	}
-}
+		g_bTimingIntr = 0x01;
+		
 
+//		Printer_Font_Extract("1.88 km");
+//		Printer_line();
+//		memset(ascii_printer, 0x00, sizeof(ascii_printer));
+//		memset(print_real, 0x00, sizeof(print_real));
+		
+		EXTI_ClearITPendingBit(EXTI_Line9);		// Clean IT Flag
+	}   
+
+	if(EXTI_GetITStatus(EXTI_Line8) != RESET)	// PB9 -->> Reset
+	{
+		// 中断逻辑     
+		g_bResetIntr = 0x01;
+		byPrinter_head_ITFlag = 0x00;		// 打印机针头标志位清零
+
+		EXTI_ClearITPendingBit(EXTI_Line8);		// Clean IT Flag
+	}
 	
+	
+//		EXTI_ClearITPendingBit(EXTI_Line9);		// Clean IT Flag
+//		EXTI_ClearITPendingBit(EXTI_Line8);		// Clean IT Flag
+	
+	
+}
 
 /**
   * @} EXTI15_10_IRQHandler()
   */
 
-void EXTI15_10_IRQHandler(void)		// Reset Signal
-{
-	
-	if(EXTI_GetITStatus(EXTI_Line12) != RESET)	
-	{
-		// 中断逻辑
-		GPIO_ToggleBit(GPIOB, GPIO_Pin_15);		
-//		GPIO_ResetBits(GPIOB, GPIO_Pin_15);	 // 打开 LED_PB15
-//		MOTER_OFF();		// 如果检测到复位信号, 电机停止
-		g_bResetIntr = 0x01;
-		byPrinter_head_ITFlag = 0x00;		// 打印机针头标志位清零
-
-		EXTI_ClearITPendingBit(EXTI_Line12);		// Clean IT Flag
-	}
-}
+//void EXTI15_10_IRQHandler(void)		// Reset Signal
+//{
+//}
 
 /******************* (C) COPYRIGHT 2011 STMicroelectronics *****END OF FILE****/

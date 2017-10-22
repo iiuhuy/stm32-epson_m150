@@ -112,42 +112,34 @@ void Nvic_Init(void)
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);		// 位于同一组别, 
 
 	// Reset	PB10 
-	NVIC_InitStructure.NVIC_IRQChannel = EXTI15_10_IRQn;	// Reset signal
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+	NVIC_InitStructure.NVIC_IRQChannel = EXTI9_5_IRQn;	
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
 	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 	NVIC_Init(&NVIC_InitStructure);
-	
+/*	
 	// Timing  PB6
 	NVIC_InitStructure.NVIC_IRQChannel = EXTI9_5_IRQn;		// Timing 
 	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
 	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 	NVIC_Init(&NVIC_InitStructure);
-	
+*/
+
+/*
 	// USART ( 串口)
 	NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQn;		// USART
 	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
 	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 	NVIC_Init(&NVIC_InitStructure);
-}
-
-void Printer_work(void)
-{
-	if(byPrinter_head_ITFlag == 0x01)
-	{
-		//Printer_Font_Extract("A1B2C3");	// 提取先关的数据
-//		Printer_Font_Extract("A1B2C3D4");
-		print_matrix_invert();		// 打印点阵的置换
-		Printer_line();	// 打印一行
-	}
+*/
 }
 
 int main(void)
 {
 	RCC_Configuration();	
-	Uart1_Init(115200);	// 串口初始化： 波特率 115200, 8 数据位, 1 位停止位, 禁用奇偶校验
+//	Uart1_Init(115200);	// 串口初始化： 波特率 115200, 8 数据位, 1 位停止位, 禁用奇偶校验
 	delay_init();		// 延时初始化
 	
 	Printer_IO_Config();	// 打印机 IO 初始化
@@ -155,14 +147,15 @@ int main(void)
 	Printer_Timer_Init();  // 打印前初始化变量
 	
 	MOTER_ON();
-	delay_ms(200);
-	Printer_Font_Extract("A1B2C3D4");
 
-//	memset(print_real, 0xFF, sizeof(print_real));
-
+	Printer_Font_Extract("1.35 KM");
+	
   	while (1)
   	{
-  		Printer_work();
+		if(byPrinter_head_ITFlag == 0x01)
+		{
+			Printer_line();	// 打印一行
+		}
   	}
 }
 

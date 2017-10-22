@@ -87,42 +87,42 @@
 
 
 /******************* PRINTER M-150II IO ************/
-#define PTCOM_PORT							GPIOC
-#define PTCOM_PIN								GPIO_Pin_5
-#define PTCOM_ON()							GPIO_SetBits(PTCOM_PORT, PTCOM_PIN)
-#define PTCOM_OFF()							GPIO_ResetBits(PTCOM_PORT, PTCOM_PIN)	// no use, no modify
+//#define PTCOM_PORT							GPIOC
+//#define PTCOM_PIN								GPIO_Pin_5
+//#define PTCOM_ON()							GPIO_SetBits(PTCOM_PORT, PTCOM_PIN)
+//#define PTCOM_OFF()							GPIO_ResetBits(PTCOM_PORT, PTCOM_PIN)	// no use, no modify
 
-#define PTA_PORT								GPIOB	//GPIOC
-#define PTA_PIN									GPIO_Pin_0	//GPIO_Pin_3
+#define PTA_PORT								GPIOC	//GPIOB
+#define PTA_PIN									GPIO_Pin_3	//GPIO_Pin_3
 #define PTA_OFF()    						GPIO_ResetBits(PTA_PORT, PTA_PIN)
 #define PTA_ON()    						GPIO_SetBits(PTA_PORT, PTA_PIN)				// GPIOB_O
 
-#define PTB_PORT								GPIOB	//GPIOC
-#define PTB_PIN									GPIO_Pin_1	//GPIO_Pin_2
+#define PTB_PORT								GPIOC	//GPIOB
+#define PTB_PIN									GPIO_Pin_2	//GPIO_Pin_2
 #define PTB_OFF()     					GPIO_ResetBits(PTB_PORT, PTB_PIN)
 #define PTB_ON()    						GPIO_SetBits(PTB_PORT, PTB_PIN)				// GPIOB_1
 
-#define PTC_PORT								GPIOB	//GPIOC
-#define PTC_PIN									GPIO_Pin_2	//GPIO_Pin_1
+#define PTC_PORT								GPIOC	//GPIOB
+#define PTC_PIN									GPIO_Pin_1	//GPIO_Pin_1
 #define PTC_OFF()     					GPIO_ResetBits(PTC_PORT, PTC_PIN)
 #define PTC_ON()    						GPIO_SetBits(PTC_PORT, PTC_PIN)				// GPIOB_2
 
-#define PTD_PORT								GPIOB	//GPIOC
-#define PTD_PIN									GPIO_Pin_5	//GPIO_Pin_0
+#define PTD_PORT								GPIOC	//GPIOB
+#define PTD_PIN									GPIO_Pin_0	//GPIO_Pin_5
 #define PTD_OFF()     					GPIO_ResetBits(PTD_PORT, PTD_PIN)
 #define PTD_ON()    						GPIO_SetBits(PTD_PORT, PTD_PIN)				// GPIOB_3
 
-#define MOTER_PORT							GPIOB	//GPIOC
-#define MOTER_PIN								GPIO_Pin_7	//GPIO_Pin_4
+#define MOTER_PORT								GPIOC	//GPIOB
+#define MOTER_PIN								GPIO_Pin_4	//GPIO_Pin_7
 #define MOTER_OFF()     				GPIO_ResetBits(MOTER_PORT, MOTER_PIN)
-#define MOTER_ON()    					GPIO_SetBits(MOTER_PORT, MOTER_PIN)		// GPIOB_4
+#define MOTER_ON()    					GPIO_SetBits(MOTER_PORT, MOTER_PIN)			// GPIOB_4
 
-#define PT_TIMER_PORT						GPIOB	//GPIOB
-#define PT_TIMER_PIN						GPIO_Pin_6	//GPIO_Pin_0
+#define PT_TIMER_PORT							GPIOB	//GPIOB
+#define PT_TIMER_PIN								GPIO_Pin_9	//GPIO_Pin_6
 #define PT_GET_TIMER()     			GPIO_ReadInputDataBit(PT_TIMER_PORT, PT_TIMER_PIN)	// GPIOB_5
 
-#define PT_RESET_DETCT_PORT			GPIOB	//GPIOB
-#define PT_RESET_DETCT_PIN			GPIO_Pin_12	//GPIO_Pin_1
+#define PT_RESET_DETCT_PORT					GPIOB	//GPIOB
+#define PT_RESET_DETCT_PIN						GPIO_Pin_8	//GPIO_Pin_12
 #define PT_GET_RESET()     			GPIO_ReadInputDataBit(PT_RESET_DETCT_PORT, PT_RESET_DETCT_PIN)	// GPIOB_6
 
 ////////////////////////////////////////////////////////////////////////////////

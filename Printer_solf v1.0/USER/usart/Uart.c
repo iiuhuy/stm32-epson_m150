@@ -35,7 +35,7 @@ void Uart1_Init(uint32_t baud)
 	USART_InitStructure.USART_Parity = USART_Parity_No;//不进行奇偶校验
 	USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;//硬件流控制失能
 	USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;//接收+发送模式
-	USART_Init(USART1, &USART_InitStructure);
+	USART_Init(USART1, &USART_InitStructure);	// 初始化串口 1
 	/* 使能串口接收中断 */
     USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);
 	/* 第5步：使能 USART， 配置完毕 */
