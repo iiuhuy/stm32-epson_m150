@@ -1,7 +1,7 @@
 .\objects\main.o: USER\main.c
 .\objects\main.o: USER\stm32f10x.h
 .\objects\main.o: .\CORE\core_cm3.h
-.\objects\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+.\objects\main.o: C:\Keil_v5.23\ARM\ARMCC\Bin\..\include\stdint.h
 .\objects\main.o: USER\system_stm32f10x.h
 .\objects\main.o: USER\stm32f10x_conf.h
 .\objects\main.o: .\STM32F10x_FWLib\inc\stm32f10x_adc.h
@@ -28,7 +28,7 @@
 .\objects\main.o: .\STM32F10x_FWLib\inc\stm32f10x_usart.h
 .\objects\main.o: .\STM32F10x_FWLib\inc\stm32f10x_wwdg.h
 .\objects\main.o: .\STM32F10x_FWLib\inc\misc.h
-.\objects\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+.\objects\main.o: C:\Keil_v5.23\ARM\ARMCC\Bin\..\include\stdio.h
 .\objects\main.o: .\USER\delay\delay.h
 .\objects\main.o: .\USER\sys\sys.h
 .\objects\main.o: .\USER\usart\Uart.h

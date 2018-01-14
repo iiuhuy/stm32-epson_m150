@@ -30,7 +30,8 @@ unsigned char const ascii_5x7[96][7]={
 	0x04,0x04,0x04,0x04,0x04,0x00,0x04,//'!' 	1
 	0x05,0x05,0x05,0x00,0x00,0x00,0x00,//'"' 	2
 	0x0A,0x0A,0x1F,0x0A,0x1F,0x0A,0x0A,//'#' 	3
-	0x04,0x1E,0x05,0x0E,0x14,0x0F,0x04,//'$' 	4
+//	0x04,0x1E,0x05,0x0E,0x14,0x0F,0x04,//'$' 	4
+	0x11,0x0A,0x1F,0x04,0x1F,0x04,0x04,//'￥'	4	将 '$' 替换为 '￥'
 	0x03,0x13,0x08,0x04,0x02,0x19,0x18,//'%' 	5
 	0x06,0x09,0x05,0x02,0x15,0x09,0x16,//'&' 	6
 	0x03,0x02,0x01,0x00,0x00,0x00,0x00,//''' 	7
@@ -353,7 +354,8 @@ void Printer_line()
 		/* A */
 		if(p_ctr.t_num == dot_a[a_i])
 		{
-			if((print_real[p_ctr.line_num-1-space_line][a_i >> 3] & (0x01 << (a_i & 0x07))))
+//			if((print_real[p_ctr.line_num-1-space_line][a_i >> 3] & (0x01 << (a_i & 0x07))))
+			if((print_real[p_ctr.line_num-1-space_line][a_i/6] & (0x01 << (a_i%6))))	// 比上面这条打印的字模更小, 一行的字最多
 			{
 				PTA_ON();
 //				delay_us(700);
@@ -367,7 +369,8 @@ void Printer_line()
 		/* B */
 		if(p_ctr.t_num == dot_b[b_i])
 		{
-			if((print_real[p_ctr.line_num-1-space_line][(b_i >> 3) + 3] & (0x01 << (b_i & 0x07))))
+//			if((print_real[p_ctr.line_num-1-space_line][(b_i >> 3) + 3] & (0x01 << (b_i & 0x07))))
+			if((print_real[p_ctr.line_num-1-space_line][a_i/6] & (0x01 << (a_i%6))))	// 比上面这条打印的字模更小, 一行的字最多
 			{
 				PTB_ON();
 //				delay_us(700);
@@ -381,8 +384,9 @@ void Printer_line()
 		/* C */
 		if(p_ctr.t_num == dot_c[c_i])
 		{
-			if((print_real[p_ctr.line_num-1-space_line][(c_i >> 3) + 6] & (0x01 << (c_i & 0x07))))
-			{
+//		if((print_real[p_ctr.line_num-1-space_line][(c_i >> 3) + 6] & (0x01 << (c_i & 0x07))))
+		if((print_real[p_ctr.line_num-1-space_line][a_i/6] & (0x01 << (a_i%6))))	// 比上面这条打印的字模更小, 一行的字最多
+		{
 				PTC_ON();
 //				delay_us(600);
 			}else
@@ -395,7 +399,8 @@ void Printer_line()
 		/* D */
 		if(p_ctr.t_num == dot_d[d_i])
 		{
-			if((print_real[p_ctr.line_num-1-space_line][(d_i >> 3) + 9] & (0x01 << (d_i & 0x07))))
+//			if((print_real[p_ctr.line_num-1-space_line][(d_i >> 3) + 9] & (0x01 << (d_i & 0x07))))			
+			if((print_real[p_ctr.line_num-1-space_line][a_i/6] & (0x01 << (a_i%6))))	// 比上面这条打印的字模更小, 一行的字最多
 			{
 				PTD_ON();
 //				delay_us(600);

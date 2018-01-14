@@ -2,7 +2,7 @@
 .\objects\stm32f10x_it.o: USER\stm32f10x_it.h
 .\objects\stm32f10x_it.o: USER\stm32f10x.h
 .\objects\stm32f10x_it.o: .\CORE\core_cm3.h
-.\objects\stm32f10x_it.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+.\objects\stm32f10x_it.o: C:\Keil_v5.23\ARM\ARMCC\Bin\..\include\stdint.h
 .\objects\stm32f10x_it.o: USER\system_stm32f10x.h
 .\objects\stm32f10x_it.o: USER\stm32f10x_conf.h
 .\objects\stm32f10x_it.o: .\STM32F10x_FWLib\inc\stm32f10x_adc.h
@@ -31,4 +31,4 @@
 .\objects\stm32f10x_it.o: .\STM32F10x_FWLib\inc\misc.h
 .\objects\stm32f10x_it.o: .\USER\epson_m150\epson_m150ii.h
 .\objects\stm32f10x_it.o: .\USER\sys\sys.h
-.\objects\stm32f10x_it.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
+.\objects\stm32f10x_it.o: C:\Keil_v5.23\ARM\ARMCC\Bin\..\include\string.h
